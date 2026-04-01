@@ -1572,8 +1572,8 @@ _getNotificationSettings({
     for (final entry in settings.channelOverrides!.entries) {
       overrides[entry.key] = (
         messageNotifications:
-            entry.value.messageNotifications.json ??
-            UserNotificationSettings.inherit.json!,
+            entry.value.messageNotifications.toValue() ??
+            UserNotificationSettings.inherit.toValue()!,
         muted: entry.value.muted,
       );
     }
@@ -1582,8 +1582,8 @@ _getNotificationSettings({
   return (
     muted: settings.muted,
     messageNotifications:
-        settings.messageNotifications.json ??
-        UserNotificationSettings.allMessages.json!,
+        settings.messageNotifications.toValue() as int? ??
+        UserNotificationSettings.allMessages.toValue() as int,
     suppressEveryone: settings.suppressEveryone,
     suppressRoles: settings.suppressRoles,
     mobilePush: settings.mobilePush,
@@ -1628,7 +1628,7 @@ Future<void> _updateChannelOverride({
 
     final newOverride = ChannelOverrides(
       collapsed: existingOverride?.collapsed ?? false,
-      messageNotifications: UserNotificationSettings.fromJson(
+      messageNotifications: UserNotificationSettingsMapper.fromValue(
         messageNotifications,
       ),
       muted: muted,
@@ -1736,7 +1736,7 @@ Future<void> _updateNotificationSetting({
       }
     }
     if (messageNotifications != null) {
-      data['message_notifications'] = messageNotifications.json;
+      data['message_notifications'] = messageNotifications.toValue();
     }
     if (suppressEveryone != null) {
       data['suppress_everyone'] = suppressEveryone;
@@ -3122,9 +3122,8 @@ class _GuildListItemState extends State<_GuildListItem> {
                     onChanged: (value) {
                       notifLevel.value = value;
                       widget.onUpdateNotificationSetting?.call(
-                        messageNotifications: UserNotificationSettings.fromJson(
-                          value,
-                        ),
+                        messageNotifications:
+                            UserNotificationSettingsMapper.fromValue(value),
                       );
                     },
                   ),

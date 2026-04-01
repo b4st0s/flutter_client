@@ -472,7 +472,7 @@ class GatewayEventHandler {
           relCompanions.add(
             db.RelationshipsCompanion.insert(
               userId: rel.user.id,
-              type: rel.type.json ?? 1,
+              type: rel.type.toValue() as int? ?? 1,
               nickname: Value(rel.nickname),
               since: Value(rel.since),
             ),
@@ -937,7 +937,7 @@ class GatewayEventHandler {
       database.relationshipDao.upsertRelationships([
         db.RelationshipsCompanion.insert(
           userId: relationship.user.id,
-          type: relationship.type.json ?? 1,
+          type: relationship.type.toValue() as int? ?? 1,
           nickname: Value(relationship.nickname),
           since: Value(relationship.since),
         ),

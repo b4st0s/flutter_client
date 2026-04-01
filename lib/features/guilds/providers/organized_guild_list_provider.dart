@@ -6,6 +6,7 @@ import 'package:fluxer_app/features/guilds/domain/guild.dart';
 import 'package:fluxer_app/features/guilds/providers/guild_list_view_model.dart';
 import 'package:fluxer_app/features/settings/providers/user_settings_view_model.dart';
 import 'package:fluxer_dart/models/user_settings_response_guild_folders.dart';
+import 'package:fluxer_dart/models/user_settings_response_guild_folders_icon_icon.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'organized_guild_list_provider.g.dart';
@@ -110,7 +111,7 @@ class OrganizedGuildList extends _$OrganizedGuildList {
             name: folder.name,
             color: folder.color,
             flags: folder.flags ?? 0,
-            icon: folder.icon?.json,
+            icon: folder.icon?.toValue() as String?,
             guilds: folderGuilds,
           ),
         );

@@ -63,7 +63,7 @@ class Friend {
     RelationshipTypes.blocked => FriendStatus.blocked,
     RelationshipTypes.incomingRequest => FriendStatus.pendingIncoming,
     RelationshipTypes.outgoingRequest => FriendStatus.pendingOutgoing,
-    RelationshipTypes.$unknown => FriendStatus.accepted,
+    RelationshipTypes.unknown => FriendStatus.accepted,
   };
 
   static FriendStatus _typeFromInt(int type) {

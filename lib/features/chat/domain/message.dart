@@ -419,7 +419,7 @@ class Message {
       replyToId: sdk.referencedMessage?.id,
       isPinned: sdk.pinned,
       isMentioned: sdk.mentionEveryone,
-      type: sdk.type.json ?? 0,
+      type: sdk.type.toValue() as int? ?? 0,
     );
   }
 

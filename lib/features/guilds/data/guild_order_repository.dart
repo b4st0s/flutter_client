@@ -68,8 +68,8 @@ class GuildOrderRepository {
               color: item.color,
               flags: item.flags,
               icon: item.icon != null
-                  ? UserSettingsUpdateRequestGuildFoldersIconIcon.fromJson(
-                      item.icon!,
+                  ? UserSettingsUpdateRequestGuildFoldersIconIconMapper.fromValue(
+                      item.icon,
                     )
                   : null,
             ),

@@ -93,5 +93,5 @@ class FriendRepository {
     }
   }
 
-  static int _typeToInt(RelationshipTypes type) => type.json ?? 1;
+  static int _typeToInt(RelationshipTypes type) => type.toValue() as int? ?? 1;
 }
