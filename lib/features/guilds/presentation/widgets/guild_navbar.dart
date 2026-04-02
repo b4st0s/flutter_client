@@ -2113,6 +2113,10 @@ class _GuildListItemState extends State<_GuildListItem> {
         ? context.colors.brandPrimary
         : context.colors.serverIconBackground;
 
+    final guildImageUrl = _isHovered && widget.guild?.animatedIconUrl != null
+        ? widget.guild!.animatedIconUrl!
+        : widget.iconUrl;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
@@ -2197,17 +2201,15 @@ class _GuildListItemState extends State<_GuildListItem> {
                                   )
                                 : widget.iconUrl != null
                                 ? CachedNetworkImage(
-                                    imageUrl:
-                                        _isHovered &&
-                                            widget.guild?.animatedIconUrl !=
-                                                null
-                                        ? widget.guild!.animatedIconUrl!
-                                        : widget.iconUrl!,
-                                    errorBuilder: (context, url, error) =>
-                                        _buildBackupIcon(
-                                          context,
-                                          isActive: isActive,
-                                        ),
+                                    imageUrl: guildImageUrl!,
+                                    errorBuilder: (context, url, error) {
+                                      print("err = $error");
+                                      return _buildBackupIcon(
+                                        context,
+                                        isActive: isActive,
+                                      );
+                                    },
+
                                     progressIndicatorBuilder:
                                         (context, url, progress) =>
                                             _buildBackupIcon(

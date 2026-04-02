@@ -395,7 +395,13 @@ class GatewayEventHandler {
           if (unavailable) {
             continue;
           }
-          final guildData = GuildCreateData.fromJson(rawGuild);
+
+          // I think this bit is just borked. It only serves user ID, however
+          // the model requires more. I think it breaks more here because
+          // the original parsing had a weird thing that ignored params
+          // entirely if they broke.
+          rawGuild["members"] = [];
+          final guildData = GuildCreateDataMapper.fromJson(rawGuild);
           final guildId = rawGuild['id'] as String;
 
           for (final channel in guildData.channels) {
