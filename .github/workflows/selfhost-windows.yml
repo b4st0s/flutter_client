@@ -6,6 +6,11 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    # Pub cache sur le MÊME disque (D:) que le workspace : les .plugin_symlinks deviennent
+    # same-drive, ce qui répare la résolution de symlinks de cargokit (super_native_extensions)
+    # et autres plugins natifs qui cassent sur des symlinks cross-drive (C: -> D:).
+    env:
+      PUB_CACHE: D:\pubcache
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,7 +43,7 @@ jobs:
       - name: Pre-extract libwebrtc (bypass CMake symlink-extract block)
         shell: pwsh
         run: |
-          $base = Join-Path $env:LOCALAPPDATA "Pub\Cache\hosted\pub.dev"
+          $base = Join-Path $env:PUB_CACHE "hosted\pub.dev"
           $plugin = Get-ChildItem $base -Directory -Filter "flutter_webrtc-*" | Select-Object -First 1
           if (-not $plugin) { throw "flutter_webrtc plugin dir not found under $base" }
           $tp = Join-Path $plugin.FullName "third_party"
