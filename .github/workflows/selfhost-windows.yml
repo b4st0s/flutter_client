@@ -23,14 +23,36 @@ jobs:
         run: flutter pub get
       - name: Code generation
         run: dart run build_runner build --delete-conflicting-outputs
-      # Pin CMake 3.30 ONLY for the flutter build (CMake 3.31 rejects extracting
-      # flutter_webrtc's libwebrtc.zip through the plugin symlink). Placed after the
-      # Dart native build hooks so those keep using the default VS-integrated CMake.
-      - name: Pin CMake 3.30 (flutter_webrtc symlink-extract fix)
-        uses: jwlawson/actions-setup-cmake@v2
-        with:
-          cmake-version: "3.30.5"
-      - name: Build Windows (self-hosted -> fluxer.amiand.fr)
+      # flutter_webrtc downloads libwebrtc.zip then file(ARCHIVE_EXTRACT) it; CMake >=3.31
+      # refuses to extract through the plugin symlink. Its CMakeLists skips extraction if
+      # third_party/libwebrtc already exists. So: 1st build downloads the zip (fails on
+      # extract), we extract it ourselves (PowerShell has no symlink restriction), 2nd
+      # build then skips the CMake extract and proceeds.
+      - name: Build Windows (1st pass - fetches libwebrtc.zip, extract fails)
+        continue-on-error: true
+        run: >
+          flutter build windows --release
+          --dart-define=APP_ENVIRONMENT=stable
+          --dart-define=PUSH_PROVIDER=unifiedpush
+          --dart-define=FLUXER_BASE_URL=https://fluxer.amiand.fr/api/v1
+      - name: Pre-extract libwebrtc (bypass CMake symlink-extract block)
+        shell: pwsh
+        run: |
+          $base = Join-Path $env:LOCALAPPDATA "Pub\Cache\hosted\pub.dev"
+          $plugin = Get-ChildItem $base -Directory -Filter "flutter_webrtc-*" | Select-Object -First 1
+          if (-not $plugin) { throw "flutter_webrtc plugin dir not found under $base" }
+          $tp = Join-Path $plugin.FullName "third_party"
+          $zip = Join-Path $tp "downloads\libwebrtc.zip"
+          Write-Host "third_party = $tp"
+          if (-not (Test-Path $zip)) { throw "libwebrtc.zip not found at $zip" }
+          if (-not (Test-Path (Join-Path $tp "libwebrtc"))) {
+            Write-Host "Extracting libwebrtc.zip ..."
+            Expand-Archive -Path $zip -DestinationPath $tp -Force
+          } else {
+            Write-Host "libwebrtc already present, nothing to do"
+          }
+          Get-ChildItem $tp | Select-Object Name | Format-Table -AutoSize
+      - name: Build Windows (2nd pass - self-hosted -> fluxer.amiand.fr)
         run: >
           flutter build windows --release
           --dart-define=APP_ENVIRONMENT=stable
