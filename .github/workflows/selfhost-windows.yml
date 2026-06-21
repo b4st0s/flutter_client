@@ -12,10 +12,6 @@ jobs:
           submodules: recursive
       - name: Sync submodules
         run: git submodule update --init --recursive
-      - name: Pin CMake 3.30 (flutter_webrtc symlink-extract fix)
-        uses: jwlawson/actions-setup-cmake@v2
-        with:
-          cmake-version: "3.30.5"
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -27,6 +23,13 @@ jobs:
         run: flutter pub get
       - name: Code generation
         run: dart run build_runner build --delete-conflicting-outputs
+      # Pin CMake 3.30 ONLY for the flutter build (CMake 3.31 rejects extracting
+      # flutter_webrtc's libwebrtc.zip through the plugin symlink). Placed after the
+      # Dart native build hooks so those keep using the default VS-integrated CMake.
+      - name: Pin CMake 3.30 (flutter_webrtc symlink-extract fix)
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: "3.30.5"
       - name: Build Windows (self-hosted -> fluxer.amiand.fr)
         run: >
           flutter build windows --release
