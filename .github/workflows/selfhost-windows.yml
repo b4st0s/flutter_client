@@ -69,7 +69,15 @@ jobs:
           --dart-define=FLUXER_BASE_URL=https://fluxer.amiand.fr/api/v1
       - name: Package
         shell: pwsh
-        run: Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath fluxer-windows-x64.zip
+        run: |
+          $src = (Resolve-Path "build\windows\x64\runner\Release").Path
+          Write-Host "=== Contenu du bundle Release ==="
+          Get-ChildItem $src -Recurse | Select-Object FullName, Length | Format-Table -AutoSize
+          # Compress-Archive -Path dir/* rate des fichiers ; .NET CreateFromDirectory zippe
+          # tout le dossier de façon fiable et récursive.
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          [System.IO.Compression.ZipFile]::CreateFromDirectory($src, "$PWD\fluxer-windows-x64.zip")
+          Write-Host "Zip: $((Get-Item fluxer-windows-x64.zip).Length) octets"
       - uses: actions/upload-artifact@v4
         with:
           name: fluxer-windows-x64
