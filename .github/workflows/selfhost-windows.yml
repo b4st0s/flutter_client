@@ -11,6 +11,10 @@ jobs:
     # et autres plugins natifs qui cassent sur des symlinks cross-drive (C: -> D:).
     env:
       PUB_CACHE: D:\pubcache
+      # MSVC récent (VS 18) transforme <experimental/coroutine> (utilisé par
+      # flutter_inappwebview_windows, permission_handler_windows) en erreur dure.
+      # La variable CL injecte ce define dans toutes les compilations cl.exe.
+      CL: /D_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS
     steps:
       - uses: actions/checkout@v4
         with:
