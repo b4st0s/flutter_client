@@ -12,6 +12,10 @@ jobs:
           submodules: recursive
       - name: Sync submodules
         run: git submodule update --init --recursive
+      - name: Pin CMake 3.30 (flutter_webrtc symlink-extract fix)
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: "3.30.5"
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
