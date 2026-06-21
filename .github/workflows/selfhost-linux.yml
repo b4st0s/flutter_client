@@ -39,6 +39,12 @@ jobs:
       - name: Code generation
         run: dart run build_runner build --delete-conflicting-outputs
       - name: Build Linux (self-hosted -> fluxer.amiand.fr)
+        # Un plugin natif (flutter_webrtc) passe -Wno-deprecated-literal-operator,
+        # inconnu de clang-14 (22.04) -> -Werror le rend fatal. On désactive l'erreur
+        # sur flags inconnus (indépendant de la version de compilateur).
+        env:
+          CXXFLAGS: "-Wno-unknown-warning-option"
+          CFLAGS: "-Wno-unknown-warning-option"
         run: >
           flutter build linux --release
           --dart-define=APP_ENVIRONMENT=stable
