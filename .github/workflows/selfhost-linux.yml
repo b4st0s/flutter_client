@@ -5,7 +5,9 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # 22.04 : libwpewebkit-1.0-dev existe (renommé sur 24.04) + glibc plus ancienne
+    # = binaire plus portable pour la distribution.
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
         with:
